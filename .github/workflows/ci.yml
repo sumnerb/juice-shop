@@ -38,28 +38,26 @@ jobs:
         run: |
           echo "Checking what was built:"
           ls -la
-          echo "\nChecking build directory:"
+          echo "Checking build directory:"
           ls -la build/ 2>&1 || echo "build/ does not exist"
-          echo "\nChecking frontend/dist directory:"
+          echo "Checking frontend/dist directory:"
           ls -la frontend/dist/ 2>&1 || echo "frontend/dist/ does not exist"
           
           mkdir -p dist
           
-          # Create tarball - use tar without trailing slashes and with better error handling
-          echo "\nCreating tarball..."
-          tar -czf dist/juice-shop.tar.gz \
-            $([ -d build ] && echo "build") \
-            $([ -d frontend/dist ] && echo "frontend/dist") \
-            package.json package-lock.json 2>&1
+          echo "Creating tarball..."
+          # Create list of files to archive
+          FILES="package.json package-lock.json"
+          [ -d "build" ] && FILES="$FILES build"
+          [ -d "frontend/dist" ] && FILES="$FILES frontend/dist"
           
-          if [ $? -eq 0 ]; then
-            echo "\nTarball created successfully:"
-            ls -lh dist/
-            tar -tzf dist/juice-shop.tar.gz | head -20
-          else
-            echo "\nError creating tarball!"
-            exit 1
-          fi
+          echo "Archiving: $FILES"
+          tar -czf dist/juice-shop.tar.gz $FILES
+          
+          echo "Tarball created successfully:"
+          ls -lh dist/
+          echo "Contents preview:"
+          tar -tzf dist/juice-shop.tar.gz | head -20
 
       - name: Publish the application to JFrog Artifactory
         run: |
