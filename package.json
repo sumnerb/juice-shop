@@ -1,7 +1,6 @@
 {
   "name": "juice-shop",
   "version": "18.0.0",
-  "private": true,
   "description": "Probably the most modern and sophisticated insecure web application",
   "keywords": [
     "web security",
@@ -25,29 +24,62 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/juice-shop/juice-shop.git"
+    "url": "git+https://github.com/juice-shop/juice-shop.git"
   },
   "license": "MIT",
   "author": "Björn Kimminich <bjoern.kimminich@owasp.org> (https://kimminich.de)",
   "contributors": [
-    "Björn Kimminich",
-    "Jannik Hollenbach",
-    "Aashish683",
-    "greenkeeper[bot]",
-    "MarcRler",
-    "agrawalarpit14",
-    "Scar26",
-    "ShubhamPalriwala",
-    "CaptainFreak",
-    "JuiceShopBot",
-    "Supratik Das",
-    "the-pro",
-    "Ziyang Li",
-    "Timo Pagel",
-    "aaryan10",
-    "..."
+    {
+      "name": "Björn Kimminich"
+    },
+    {
+      "name": "Jannik Hollenbach"
+    },
+    {
+      "name": "Aashish683"
+    },
+    {
+      "name": "greenkeeper[bot]"
+    },
+    {
+      "name": "MarcRler"
+    },
+    {
+      "name": "agrawalarpit14"
+    },
+    {
+      "name": "Scar26"
+    },
+    {
+      "name": "ShubhamPalriwala"
+    },
+    {
+      "name": "CaptainFreak"
+    },
+    {
+      "name": "JuiceShopBot"
+    },
+    {
+      "name": "Supratik Das"
+    },
+    {
+      "name": "the-pro"
+    },
+    {
+      "name": "Ziyang Li"
+    },
+    {
+      "name": "Timo Pagel"
+    },
+    {
+      "name": "aaryan10"
+    },
+    {
+      "name": "..."
+    }
   ],
   "scripts": {
+    "build": "npm run build:frontend && npm run build:server",
     "build:frontend": "cd frontend && npm run build",
     "build:server": "tsc",
     "cypress:open": "cypress open",
@@ -117,7 +149,9 @@
     ]
   },
   "dependencies": {
+    "@so-ric/colorspace": "^1.1.6",
     "body-parser": "^1.20.2",
+    "buffers": "^0.1.1",
     "check-dependencies": "^1.1.1",
     "check-internet-connected": "^2.0.6",
     "clarinet": "^0.12.6",
@@ -153,6 +187,7 @@
     "helmet": "^4.6.0",
     "html-entities": "^1.4.0",
     "i18n": "^0.11.1",
+    "jfrog-curation-malicious-dummy": "^1.0.0",
     "js-yaml": "^3.14.0",
     "jsonwebtoken": "0.4.0",
     "jssha": "^3.3.1",
@@ -182,13 +217,15 @@
     "swagger-ui-express": "^5.0.1",
     "ts-node-dev": "^1.1.8",
     "unzipper": "0.9.15",
+    "use-sync-external-store": "^1.6.0",
     "web3": "^4.13.0",
+    "web3-eth-ens": "^4.4.0",
     "winston": "^3.16.0",
     "yaml-schema-validator": "^1.2.3",
     "z85": "^0.0.2"
   },
   "devDependencies": {
-    "@cyclonedx/cyclonedx-npm": "^2.0.0||^3.0.0",
+    "@cyclonedx/cyclonedx-npm": "^4.0.3",
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@types/chai": "^4.3.20",
     "@types/clarinet": "^0.12.3",
@@ -287,5 +324,10 @@
       "angular",
       "inject"
     ]
+  },
+  "main": ".eslintrc.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
   }
 }

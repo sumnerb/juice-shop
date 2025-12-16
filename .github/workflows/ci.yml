@@ -3,10 +3,10 @@ name: CI/CD for Juice Shop
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -32,6 +32,11 @@ jobs:
       - name: Build the app
         run: |
           npm run build
+
+      - name: Create distribution tarball
+        run: |
+          mkdir -p dist
+          tar -czf dist/juice-shop.tar.gz build/ frontend/dist/ package.json package-lock.json
 
       - name: Publish the application to JFrog Artifactory
         run: |
