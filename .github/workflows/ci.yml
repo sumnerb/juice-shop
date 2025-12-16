@@ -50,10 +50,10 @@ jobs:
           echo "Tarball size:"
           ls -lh dist/juice-shop.tar.gz
           echo ""
-          echo "Uploading with PUT..."
+          echo "Uploading with POST..."
           
           response=$(curl -w "\n%{http_code}" -u "${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }}" \
-            -X PUT "${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz" \
+            -X POST "${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz" \
             -H "Content-Type: application/gzip" \
             --data-binary @dist/juice-shop.tar.gz)
           
