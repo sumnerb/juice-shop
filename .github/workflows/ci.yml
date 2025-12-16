@@ -36,28 +36,9 @@ jobs:
 
       - name: Create distribution tarball
         run: |
-          echo "Checking what was built:"
-          ls -la
-          echo "Checking build directory:"
-          ls -la build/ 2>&1 || echo "build/ does not exist"
-          echo "Checking frontend/dist directory:"
-          ls -la frontend/dist/ 2>&1 || echo "frontend/dist/ does not exist"
-          
           mkdir -p dist
-          
-          echo "Creating tarball..."
-          # Create list of files to archive
-          FILES="package.json package-lock.json"
-          [ -d "build" ] && FILES="$FILES build"
-          [ -d "frontend/dist" ] && FILES="$FILES frontend/dist"
-          
-          echo "Archiving: $FILES"
-          tar -czf dist/juice-shop.tar.gz $FILES
-          
-          echo "Tarball created successfully:"
+          tar -czf dist/juice-shop.tar.gz build frontend/dist package.json package-lock.json
           ls -lh dist/
-          echo "Contents preview:"
-          tar -tzf dist/juice-shop.tar.gz | head -20
 
       - name: Publish the application to JFrog Artifactory
         run: |
