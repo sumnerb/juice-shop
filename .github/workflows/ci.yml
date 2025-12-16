@@ -32,13 +32,13 @@ jobs:
 
       - name: Build the app
         run: |
-          npm run build:server || echo "Build failed, will create minimal tarball"
+          npm run build:server
 
       - name: Create distribution tarball
         run: |
           mkdir -p dist
-          echo "Creating minimal tarball..."
-          tar -czf dist/juice-shop.tar.gz package.json
+          echo "Creating distribution tarball..."
+          tar -czf dist/juice-shop.tar.gz build/ package.json node_modules/ data/ ftp/ frontend/dist/ views/ config/ lib/ models/ routes/
           echo "Tarball created:"
           ls -lh dist/juice-shop.tar.gz
 
