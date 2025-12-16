@@ -50,20 +50,26 @@ jobs:
           echo "Tarball size:"
           ls -lh dist/juice-shop.tar.gz
           echo ""
-          echo "Uploading..."
+          echo "Uploading with POST..."
           
-          curl -v -u "${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }}" \
-            -X PUT "${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz" \
-            -T dist/juice-shop.tar.gz \
-            -H "X-Checksum-Sha256:$(sha256sum dist/juice-shop.tar.gz | cut -d' ' -f1)" 2>&1 | tee upload.log
+          response=$(curl -w "\n%{http_code}" -u "${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }}" \
+            -X POST "${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz" \
+            -H "Content-Type: application/gzip" \
+            --data-binary @dist/juice-shop.tar.gz)
           
-          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          echo ""
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+          
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
             echo ""
-            echo "✅ Upload command completed"
+            echo "✅ Successfully uploaded to Artifactory!"
           else
             echo ""
-            echo "❌ Upload command failed"
-            cat upload.log
+            echo "❌ Upload failed with status $http_code"
             exit 1
           fi
 
