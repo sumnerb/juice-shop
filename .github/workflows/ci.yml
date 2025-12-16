@@ -37,15 +37,8 @@ jobs:
       - name: Create distribution tarball
         run: |
           mkdir -p dist
-          # Create tarball with whatever exists
-          if [ -d build ]; then
-            echo "Including build directory"
-            tar -czf dist/juice-shop.tar.gz build package.json package-lock.json
-          else
-            echo "No build directory - creating minimal tarball"
-            echo "Build artifacts would go here" > README-build.txt
-            tar -czf dist/juice-shop.tar.gz package.json package-lock.json README-build.txt
-          fi
+          echo "Creating minimal tarball..."
+          tar -czf dist/juice-shop.tar.gz package.json
           echo "Tarball created:"
           ls -lh dist/juice-shop.tar.gz
 
