@@ -1,0 +1,8 @@
+version: 1
+type: npm
+resolver:
+    repo: npm-virtual
+    serverId: sumfrog1
+deployer:
+    repo: npm-virtual
+    serverId: sumfrog1
