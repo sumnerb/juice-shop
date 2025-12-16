@@ -36,8 +36,27 @@ jobs:
 
       - name: Create distribution tarball
         run: |
+          echo "Checking what was built:"
+          ls -la
+          echo "Checking build directory:"
+          ls -la build/ || echo "build/ does not exist"
+          echo "Checking frontend/dist directory:"
+          ls -la frontend/dist/ || echo "frontend/dist/ does not exist"
+          
           mkdir -p dist
-          tar -czf dist/juice-shop.tar.gz build/ frontend/dist/ package.json package-lock.json
+          
+          # Create tarball with only existing directories
+          if [ -d "build" ] && [ -d "frontend/dist" ]; then
+            tar -czf dist/juice-shop.tar.gz build/ frontend/dist/ package.json package-lock.json
+          elif [ -d "build" ]; then
+            tar -czf dist/juice-shop.tar.gz build/ package.json package-lock.json
+          elif [ -d "frontend/dist" ]; then
+            tar -czf dist/juice-shop.tar.gz frontend/dist/ package.json package-lock.json
+          else
+            echo "Error: No build artifacts found!"
+            exit 1
+          fi
+          
           ls -lh dist/
           echo "Tarball created successfully"
 
