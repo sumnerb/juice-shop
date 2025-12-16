@@ -32,7 +32,17 @@ jobs:
 
       - name: Build the app
         run: |
-          npm run build
+          echo "Running build:frontend..."
+          npm run build:frontend
+          echo "Frontend build complete. Checking output:"
+          ls -la frontend/dist/ || echo "No frontend/dist"
+          
+          echo ""
+          echo "Running build:server..."
+          npm run build:server
+          echo "Server build complete. Checking output:"
+          ls -la build/ || echo "No build directory"
+          ls -la | grep -E "^d" | head -20
 
       - name: Create distribution tarball
         run: |
