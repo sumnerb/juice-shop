@@ -32,53 +32,45 @@ jobs:
 
       - name: Build the app
         run: |
-          echo "Running build:frontend..."
-          npm run build:frontend
-          echo "Frontend build complete. Checking output:"
-          ls -la frontend/dist/ || echo "No frontend/dist"
-          
-          echo ""
-          echo "Running build:server..."
           npm run build:server
-          echo "Server build complete. Checking output:"
-          ls -la build/ || echo "No build directory"
-          ls -la | grep -E "^d" | head -20
+          echo "Build complete. Checking for build directory:"
+          if [ -d build ]; then
+            echo "✅ Build directory exists"
+            ls -la build/ | head -10
+          else
+            echo "❌ Build directory NOT found"
+            exit 1
+          fi
 
       - name: Create distribution tarball
         run: |
           mkdir -p dist
-          
-          # Create tarball - if build doesn't exist, create with just package files
-          if [ -d build ]; then
-            echo "Creating tarball with build directory"
-            tar -czf dist/juice-shop.tar.gz build package.json package-lock.json
-          else
-            echo "WARNING: build directory not found, creating tarball with just package files"
-            tar -czf dist/juice-shop.tar.gz package.json package-lock.json
-          fi
-          
+          tar -czf dist/juice-shop.tar.gz build package.json package-lock.json
           echo "Tarball created:"
-          ls -lh dist/
+          ls -lh dist/juice-shop.tar.gz
 
       - name: Publish the application to JFrog Artifactory
         run: |
-          echo "Uploading to: ${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz"
-          echo "Using username: ${{ secrets.ARTIFACTORY_USERNAME }}"
+          echo "=== ARTIFACTORY UPLOAD ==="
+          echo "Target URL: ${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz"
+          echo "Username: ${{ secrets.ARTIFACTORY_USERNAME }}"
+          echo "Tarball size:"
+          ls -lh dist/juice-shop.tar.gz
+          echo ""
+          echo "Uploading..."
           
-          response=$(curl -w "\n%{http_code}" -u "${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }}" \
+          curl -v -u "${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }}" \
             -X PUT "${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz" \
-            -T ./dist/juice-shop.tar.gz)
+            -T dist/juice-shop.tar.gz \
+            -H "X-Checksum-Sha256:$(sha256sum dist/juice-shop.tar.gz | cut -d' ' -f1)" 2>&1 | tee upload.log
           
-          http_code=$(echo "$response" | tail -n1)
-          body=$(echo "$response" | sed '$d')
-          
-          echo "HTTP Status: $http_code"
-          echo "Response: $body"
-          
-          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
-            echo "✅ Successfully uploaded to Artifactory!"
+          if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo ""
+            echo "✅ Upload command completed"
           else
-            echo "❌ Upload failed with status $http_code"
+            echo ""
+            echo "❌ Upload command failed"
+            cat upload.log
             exit 1
           fi
 
