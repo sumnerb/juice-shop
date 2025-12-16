@@ -38,27 +38,28 @@ jobs:
         run: |
           echo "Checking what was built:"
           ls -la
-          echo "Checking build directory:"
-          ls -la build/ || echo "build/ does not exist"
-          echo "Checking frontend/dist directory:"
-          ls -la frontend/dist/ || echo "frontend/dist/ does not exist"
+          echo "\nChecking build directory:"
+          ls -la build/ 2>&1 || echo "build/ does not exist"
+          echo "\nChecking frontend/dist directory:"
+          ls -la frontend/dist/ 2>&1 || echo "frontend/dist/ does not exist"
           
           mkdir -p dist
           
-          # Create tarball with only existing directories
-          if [ -d "build" ] && [ -d "frontend/dist" ]; then
-            tar -czf dist/juice-shop.tar.gz build/ frontend/dist/ package.json package-lock.json
-          elif [ -d "build" ]; then
-            tar -czf dist/juice-shop.tar.gz build/ package.json package-lock.json
-          elif [ -d "frontend/dist" ]; then
-            tar -czf dist/juice-shop.tar.gz frontend/dist/ package.json package-lock.json
+          # Create tarball - use tar without trailing slashes and with better error handling
+          echo "\nCreating tarball..."
+          tar -czf dist/juice-shop.tar.gz \
+            $([ -d build ] && echo "build") \
+            $([ -d frontend/dist ] && echo "frontend/dist") \
+            package.json package-lock.json 2>&1
+          
+          if [ $? -eq 0 ]; then
+            echo "\nTarball created successfully:"
+            ls -lh dist/
+            tar -tzf dist/juice-shop.tar.gz | head -20
           else
-            echo "Error: No build artifacts found!"
+            echo "\nError creating tarball!"
             exit 1
           fi
-          
-          ls -lh dist/
-          echo "Tarball created successfully"
 
       - name: Publish the application to JFrog Artifactory
         run: |
