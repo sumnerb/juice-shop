@@ -36,8 +36,29 @@ jobs:
 
       - name: Create distribution tarball
         run: |
+          echo "Listing directories:"
+          ls -la
+          echo ""
+          echo "Build directory:"
+          ls -la build/ || echo "No build directory"
+          echo ""
+          echo "Frontend directory:"
+          ls -la frontend/ || echo "No frontend directory"
+          echo ""
+          if [ -d frontend/dist ]; then
+            echo "Frontend dist exists"
+            ls -la frontend/dist/
+          else
+            echo "No frontend/dist directory"
+          fi
+          
           mkdir -p dist
-          tar -czf dist/juice-shop.tar.gz build frontend/dist package.json package-lock.json
+          
+          # Only tar the build directory and package files
+          tar -czf dist/juice-shop.tar.gz build package.json package-lock.json
+          
+          echo ""
+          echo "Tarball created:"
           ls -lh dist/
 
       - name: Publish the application to JFrog Artifactory
