@@ -37,12 +37,30 @@ jobs:
         run: |
           mkdir -p dist
           tar -czf dist/juice-shop.tar.gz build/ frontend/dist/ package.json package-lock.json
+          ls -lh dist/
+          echo "Tarball created successfully"
 
       - name: Publish the application to JFrog Artifactory
         run: |
-          curl -u "${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }}" \
-          -X PUT "${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz" \
-          -T ./dist/juice-shop.tar.gz
+          echo "Uploading to: ${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz"
+          echo "Using username: ${{ secrets.ARTIFACTORY_USERNAME }}"
+          
+          response=$(curl -w "\n%{http_code}" -u "${{ secrets.ARTIFACTORY_USERNAME }}:${{ secrets.ARTIFACTORY_API_KEY }}" \
+            -X PUT "${{ secrets.ARTIFACTORY_URL }}/juice-shop/latest/juice-shop.tar.gz" \
+            -T ./dist/juice-shop.tar.gz)
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+          
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+          
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "✅ Successfully uploaded to Artifactory!"
+          else
+            echo "❌ Upload failed with status $http_code"
+            exit 1
+          fi
 
         env:
           ARTIFACTORY_URL: ${{ secrets.ARTIFACTORY_URL }}
